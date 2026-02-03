@@ -1,0 +1,11 @@
+[package]
+name = "rwasm-fuel-policy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasmparser = { version = "0.233.0", default-features = false, features = ['simd'] }
+
+[features]
+default = ["std"]
+std = ["wasmparser/std"]
