@@ -1,4 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+
 mod fuel_costs;
 pub use fuel_costs::*;
 
@@ -70,8 +71,18 @@ const _: () = assert!(DROP_KEEP_PER_FUEL == (1 << DROP_KEEP_PER_FUEL_LOG2));
 pub fn fuel_for_operator(op: &wasmparser::Operator) -> u32 {
     use wasmparser::Operator::*;
     match op {
-        Call { .. } | CallIndirect { .. } => CALL_FUEL_COST,
-        GlobalGet { .. } | GlobalSet { .. } => ENTITY_FUEL_COST,
+        // Nop and drop generate no code, so don't consume fuel for them.
+        Nop | Drop => 0,
+
+        // Control flow may create branches, but is generally cheap and
+        // free, so don't consume fuel. Note the lack of `if` since some
+        // cost is incurred with the conditional check.
+        Block { .. } | Loop { .. } | Unreachable | Return | Else | End => 0,
+
+        Call { .. } | CallIndirect { .. } | ReturnCall { .. } | ReturnCallIndirect { .. } => {
+            CALL_FUEL_COST
+        }
+
         I32Load { .. }
         | I64Load { .. }
         | F32Load { .. }
@@ -95,7 +106,10 @@ pub fn fuel_for_operator(op: &wasmparser::Operator) -> u32 {
         | I64Store8 { .. }
         | I64Store16 { .. }
         | I64Store32 { .. } => STORE_FUEL_COST,
-        MemorySize { .. }
+
+        GlobalGet { .. }
+        | GlobalSet { .. }
+        | MemorySize { .. }
         | MemoryGrow { .. }
         | MemoryInit { .. }
         | DataDrop { .. }
@@ -109,8 +123,8 @@ pub fn fuel_for_operator(op: &wasmparser::Operator) -> u32 {
         | TableSet { .. }
         | TableGrow { .. }
         | TableSize { .. } => ENTITY_FUEL_COST,
-        ReturnCall { .. } => CALL_FUEL_COST,
-        ReturnCallIndirect { .. } => CALL_FUEL_COST,
+
+        // Use base cost for remaining
         _ => BASE_FUEL_COST,
     }
 }
