@@ -67,7 +67,7 @@ const _: () = assert!(TABLE_ELEMS_PER_FUEL == (1 << TABLE_ELEMS_PER_FUEL_LOG2));
 const _: () = assert!(LOCALS_PER_FUEL == (1 << LOCALS_PER_FUEL_LOG2));
 const _: () = assert!(DROP_KEEP_PER_FUEL == (1 << DROP_KEEP_PER_FUEL_LOG2));
 
-pub fn fuel_for_operator(op: wasmparser::Operator) -> u32 {
+pub fn fuel_for_operator(op: &wasmparser::Operator) -> u32 {
     use wasmparser::Operator::*;
     match op {
         Call { .. } | CallIndirect { .. } => CALL_FUEL_COST,
