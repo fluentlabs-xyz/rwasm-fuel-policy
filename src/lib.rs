@@ -32,6 +32,9 @@
 //!
 //! The exact split is project-specific, so we keep the public API unchanged here.
 
+extern crate alloc;
+
+use alloc::string::String;
 use core::num::NonZeroU32;
 
 /// Upper bound for the input parameter `x` used by **linear** syscall/builtin gas formulas.
