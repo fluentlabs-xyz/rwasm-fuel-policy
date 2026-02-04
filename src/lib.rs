@@ -153,7 +153,7 @@ pub struct LinearFuelParams {
     ///
     /// This is expressed as an index into the syscall's parameter list as seen by the
     /// instrumentation/runtime layer.
-    pub linear_param_index: u32,
+    pub param_index: u32,
 
     /// Fuel per 32-byte word (after rounding `x` up to words).
     pub word_cost: u32,
