@@ -297,7 +297,7 @@ const _: () = assert!(DROP_KEEP_PER_FUEL == (1 << DROP_KEEP_PER_FUEL_LOG2));
 /// - be stable enough for reproducible execution across nodes.
 ///
 /// If you tighten or relax costs here, double-check any consensus assumptions and test vectors.
-pub fn fuel_for_operator(op: &wasmparser::Operator) -> u32 {
+pub fn rwasm_fuel_for_operator(op: &wasmparser::Operator) -> u32 {
     use wasmparser::Operator::*;
 
     match op {
@@ -415,5 +415,83 @@ impl FuelCosts {
     /// Returns the fuel consumption for processing the amount of table elements.
     pub fn fuel_for_elements(elements: u32) -> u32 {
         Self::costs_per(elements, TABLE_ELEMS_PER_FUEL)
+    }
+}
+
+/// rWasm disable several opcodes, most of them are FPU related
+pub fn is_rwasm_operator_disabled(op: &wasmparser::Operator) -> bool {
+    use wasmparser::Operator::*;
+    match op {
+        F32Load { .. }
+        | F64Load { .. }
+        | F32Store { .. }
+        | F64Store { .. }
+        | F32Eq
+        | F32Ne
+        | F32Lt
+        | F32Gt
+        | F32Le
+        | F32Ge
+        | F64Eq
+        | F64Ne
+        | F64Lt
+        | F64Gt
+        | F64Le
+        | F64Ge
+        | F32Abs
+        | F32Neg
+        | F32Ceil
+        | F32Floor
+        | F32Trunc
+        | F32Nearest
+        | F32Sqrt
+        | F32Add
+        | F32Sub
+        | F32Mul
+        | F32Div
+        | F32Min
+        | F32Max
+        | F32Copysign
+        | F64Abs
+        | F64Neg
+        | F64Ceil
+        | F64Floor
+        | F64Trunc
+        | F64Nearest
+        | F64Sqrt
+        | F64Add
+        | F64Sub
+        | F64Mul
+        | F64Div
+        | F64Min
+        | F64Max
+        | F64Copysign
+        | I32TruncF32S
+        | I32TruncF32U
+        | I32TruncF64S
+        | I32TruncF64U
+        | I64TruncF32S
+        | I64TruncF32U
+        | I64TruncF64S
+        | I64TruncF64U
+        | F32ConvertI32S
+        | F32ConvertI32U
+        | F32ConvertI64S
+        | F32ConvertI64U
+        | F32DemoteF64
+        | F64ConvertI32S
+        | F64ConvertI32U
+        | F64ConvertI64S
+        | F64ConvertI64U
+        | F64PromoteF32
+        | I32TruncSatF32S
+        | I32TruncSatF32U
+        | I32TruncSatF64S
+        | I32TruncSatF64U
+        | I64TruncSatF32S
+        | I64TruncSatF32U
+        | I64TruncSatF64S
+        | I64TruncSatF64U => true,
+        _ => false,
     }
 }
