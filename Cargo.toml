@@ -1,6 +1,6 @@
 [package]
 name = "rwasm-fuel-policy"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 description = "Fuel policies for rWasm VM"
 license = "Apache-2.0"
