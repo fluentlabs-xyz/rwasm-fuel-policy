@@ -47,6 +47,7 @@ jobs:
 
   publish:
     runs-on: [self-hosted, linux]
+    needs: check-version
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
